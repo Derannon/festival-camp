@@ -1,138 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Outdrink the Thinkers Camp</title>
-
-<link rel="stylesheet" href="style.css">
-
-</head>
-
-<body>
-
-<header>
-
-<h1>OUTDRINK THE THINKERS</h1>
-<h2>OUTTHINK THE DRINKERS</h2>
-<p class="subtitle">Winners do both</p>
-
+<header class="brand-header">
+  <h1>OUTDRINK THE THINKERS</h1>
+  <h2>OUTTHINK THE DRINKERS</h2>
+  <p class="subtitle">WINNERS DO BOTH 🎉</p>
 </header>
 
-
-<section class="cta">
-
-<h3>Find our camp → earn a beer 🍺</h3>
-
-<a class="navbutton"
-href="https://maps.google.com/?q=Festival+Camping"
-target="_blank">
-
-Navigate to Camp
-
-</a>
-
+<section class="cta brand-section">
+  <h2>Find our Camp 🍺</h2>
+  <a class="navbutton" href="https://maps.google.com/?q=Festival+Camping" target="_blank">
+    Navigate to Camp
+  </a>
 </section>
 
-
-<section>
-
-<h2>Camp Map</h2>
-
-<img src="assets/camp_map.jpg">
-
+<section class="map brand-section">
+  <h2>Camp Map 📍</h2>
+  <img src="assets/camp_map.jpg" alt="Festival Map with our camp">
 </section>
 
-
-<section class="code">
-
-<h2>Codeword of the Day</h2>
-
-<div class="codeword" id="codeword">
-DISCOBANANE
-</div>
-
+<section class="crew brand-section">
+  <h2>Our Crew 👑</h2>
+  <div class="crew-cards">
+    <div class="card">Andreas<br><span>Beer Logistics 🍺</span></div>
+    <div class="card">Lisa<br><span>Glitter Queen ✨</span></div>
+    <div class="card">Tom<br><span>Sound System 🎧</span></div>
+    <div class="card">Jana<br><span>Vodka Procurement 🍸</span></div>
+    <div class="card">Ben<br><span>Tent Infrastructure ⛺</span></div>
+  </div>
 </section>
 
-
-<section>
-
-<h2>Festival Trinkspiel</h2>
-
-<button onclick="drinkGame()">Generate Chaos</button>
-
-<p id="gameResult"></p>
-
+<section class="game brand-section">
+  <h2>Festival Trinkspiel 🎲</h2>
+  <button onclick="drinkGame()">Press for Chaos</button>
+  <p id="gameResult"></p>
 </section>
 
-
-<section>
-
-<h2>Beer Counter</h2>
-
-<div class="beerCounter">
-
-<span id="beerCount">0</span>
-
-</div>
-
-<button onclick="addBeer()">+1 Beer</button>
-
+<section class="beer brand-section">
+  <h2>Beer Counter 🍺</h2>
+  <div class="beerCounter"><span id="beerCount">0</span></div>
+  <button onclick="addBeer()">+1 Beer</button>
 </section>
 
-
-<section>
-
-<h2>Scan Counter</h2>
-
-<p id="scanCounter"></p>
-
+<section class="codeword brand-section">
+  <h2>Codeword 🔑</h2>
+  <div id="codeword">DISCOBANANE</div>
 </section>
 
-
-<section>
-
-<h2>Our Crew</h2>
-
-<ul>
-
-<li>Andreas - Beer Logistics</li>
-<li>Thomas - Glitter Queen</li>
-<li>Sophie - Sound System Manager</li>
-<li>Micha - Vodka Procurement</li>
-<li>Sina - Tent Infrastructure</li>
-
-</ul>
-
+<section class="playlist brand-section">
+  <h2>Camp Playlist 🎶</h2>
+  <a class="spotify" href="https://open.spotify.com/" target="_blank">Open Playlist</a>
 </section>
 
-
-<section>
-
-<h2>Camp Playlist</h2>
-
-<a class="spotify"
-href="https://open.spotify.com/playlist/2OH5uA1XF39Ehe2Zzl1cet?si=c00fbd1b82e14a11"
-target="_blank">
-
-Open Playlist
-
-</a>
-
-</section>
-
-
-<footer>
-
-Outdrink. Outthink. Outparty.
-
+<footer class="brand-footer">
+  Outdrink. Outthink. Outparty. 🎉
 </footer>
-
-
-<script src="script.js"></script>
-
-</body>
-
-</html>
