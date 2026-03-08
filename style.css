@@ -1,72 +1,115 @@
 body{
-font-family: Arial, sans-serif;
-background:#0f0f0f;
+
+background:#0b0b0b;
 color:white;
-text-align:center;
+font-family:Arial;
 margin:0;
+text-align:center;
+
 }
 
 header{
-padding:40px 20px;
+
 background:black;
+padding:40px;
+
 }
 
 h1{
-font-size:32px;
-letter-spacing:2px;
-}
 
-h2{
-margin-top:30px;
+letter-spacing:2px;
+
 }
 
 .subtitle{
+
 color:#ffd000;
-font-weight:bold;
+
 }
 
 section{
-padding:30px 20px;
+
+padding:40px 20px;
+
 }
 
 .cta{
+
 background:#ffd000;
 color:black;
-font-weight:bold;
+
 }
 
-.map img{
+.navbutton{
+
+display:inline-block;
+padding:15px 25px;
+background:black;
+color:white;
+text-decoration:none;
+border-radius:10px;
+margin-top:15px;
+
+}
+
+img{
+
 width:90%;
 max-width:400px;
 border-radius:10px;
-margin-top:15px;
+
 }
 
-#codeword{
-font-size:28px;
+.codeword{
+
+font-size:30px;
 font-weight:bold;
 background:#222;
 padding:15px;
 border-radius:10px;
 display:inline-block;
+
 }
 
 button{
+
 padding:15px 25px;
 font-size:18px;
+background:#ffd000;
 border:none;
 border-radius:10px;
-background:#ffd000;
 cursor:pointer;
+
 }
 
 button:hover{
-background:#ffea5c;
+
+background:#ffe866;
+
+}
+
+.beerCounter{
+
+font-size:50px;
+margin:10px;
+
+}
+
+.spotify{
+
+display:inline-block;
+padding:15px 25px;
+background:#1DB954;
+color:white;
+border-radius:10px;
+text-decoration:none;
+
 }
 
 footer{
-padding:40px;
+
+padding:30px;
 background:black;
-color:#999;
-font-size:14px;
+color:#777;
+
 }

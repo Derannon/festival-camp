@@ -1,35 +1,77 @@
+
+// Trinkspiel Generator
+
 const games = [
 
-"Everyone drinks!",
-"You must bring our camp a beer.",
-"Find a stranger and cheers.",
-"Shot time.",
-"DJ chooses next song.",
-"You drink twice.",
-"Water break (boring).",
-"Group cheers."
+"Everyone drinks",
+"You drink twice",
+"Bring our camp a beer",
+"Find a stranger and cheers",
+"Shot time",
+"Dance battle",
+"Water break",
+"DJ chooses next song"
 
 ];
 
 function drinkGame(){
 
-let result = games[Math.floor(Math.random()*games.length)];
+const result = games[Math.floor(Math.random()*games.length)];
 
 document.getElementById("gameResult").innerText = result;
 
 }
 
-// Fake scan counter
-let scans = localStorage.getItem("scanCount");
+
+
+// Bier Counter
+
+let beerCount = localStorage.getItem("beerCount") || 0;
+
+document.getElementById("beerCount").innerText = beerCount;
+
+function addBeer(){
+
+beerCount++;
+
+localStorage.setItem("beerCount", beerCount);
+
+document.getElementById("beerCount").innerText = beerCount;
+
+}
+
+
+
+// Scan Counter
+
+let scans = localStorage.getItem("scanCounter");
 
 if(!scans){
 
-scans = Math.floor(Math.random()*200)+50;
+scans = Math.floor(Math.random()*150)+50;
 
 }
 
 scans++;
 
-localStorage.setItem("scanCount", scans);
+localStorage.setItem("scanCounter", scans);
 
-document.getElementById("counter").innerText = "#" + scans;
+document.getElementById("scanCounter").innerText = "Scan #" + scans;
+
+
+
+// Party Konfetti
+
+setTimeout(()=>{
+
+for(let i=0;i<40;i++){
+
+let conf = document.createElement("div");
+
+conf.className="confetti";
+
+document.body.appendChild(conf);
+
+}
+
+},1000);
