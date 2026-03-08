@@ -99,9 +99,9 @@ const navBtn = document.getElementById('navToMap');
 const spotifyBtn = document.getElementById('openPlaylist');
 const spotifyLink = document.getElementById('spotifyLink');
 
-navBtn.href = CONFIG.mapsUrl;
-spotifyBtn.href = CONFIG.spotifyUrl;
-spotifyLink.href = CONFIG.spotifyUrl;
+navBtn.href = https://maps.app.goo.gl/SzGQtX2s7pvHX6De6;
+spotifyBtn.href = https://open.spotify.com/playlist/2OH5uA1XF39Ehe2Zzl1cet?si=3190b6ebe938408e;
+spotifyLink.href = https://open.spotify.com/playlist/2OH5uA1XF39Ehe2Zzl1cet?si=3190b6ebe938408e;
 spotifyBtn.textContent = CONFIG.playlistLabel;
 spotifyLink.textContent = CONFIG.playlistLabel;
 
