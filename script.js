@@ -111,12 +111,16 @@ async function loadScanCount(){
     const response = await fetch(url);
     const data = await response.json();
 
-    const count = data.count || 0;
+    // GoatCounter liefert count als String
+    let count = data.count || "0";
 
-    // Animation ohne #
+    // Kommas entfernen und zu Zahl machen
+    count = parseInt(count.toString().replace(/,/g,''),10);
+
+    if(isNaN(count)) count = 0;
+
     animateNumber(scanEl, 0, count, 900);
 
-    // danach # davor setzen
     setTimeout(()=>{
       scanEl.textContent = "#" + count;
     },900);
@@ -125,7 +129,6 @@ async function loadScanCount(){
   catch(err){
 
     console.error("Scan counter error:", err);
-
     scanEl.textContent = "#0";
 
   }
