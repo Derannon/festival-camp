@@ -126,3 +126,17 @@ document.getElementById('shareBtn').addEventListener('click', async ()=>{
     if (e.key === 'Tab') document.body.classList.add('show-focus');
   });
 })();
+
+async function loadScanCount(){
+
+const response = await fetch(
+"https://derannson.goatcounter.com/counter/TOTAL.json"
+);
+
+const data = await response.json();
+
+document.getElementById("scanCounter").textContent = "#" + data.count;
+
+}
+
+loadScanCount();
