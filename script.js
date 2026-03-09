@@ -4,15 +4,15 @@ const CONFIG = {
   mapsUrl: "https://maps.app.goo.gl/SzGQtX2s7pvHX6De6",
   playlistLabel: "Our Festival Playlist",
 
+  /* GoatCounter domain */
   goatCounter: "https://festival-camp.goatcounter.com",
 
-  /* CounterAPI v2 */
-  globalBeerGet:  "https://api.counterapi.dev/v2/outdrink/beer",
-  globalBeerUp:   "https://api.counterapi.dev/v2/outdrink/beer/up",
-  dailyBeerGet:   "https://api.counterapi.dev/v2/outdrink/beer-today",
-  dailyBeerUp:    "https://api.counterapi.dev/v2/outdrink/beer-today/up"
+  /* CounterAPI.com keys */
+  globalBeerApi: "https://counterapi.com/api/yourcampfestival/beer/up",
+  dailyBeerApi: "https://counterapi.com/api/yourcampfestival_today/beer/up"
 };
 /* ===== END CONFIG ===== */
+
 
 /* Utilities */
 function animateNumber(el, from, to, ms = 700) {
@@ -28,21 +28,18 @@ function animateNumber(el, from, to, ms = 700) {
   requestAnimationFrame(step);
 }
 
-function getNumberFromEl(el) {
-  if(!el) return 0;
-  const txt = el.textContent || "";
-  const digits = txt.replace(/[^\d]/g, '');
-  return digits ? parseInt(digits, 10) : 0;
-}
 
-/* Confetti */
+/* Confetti: short burst (one-time) */
 (function confettiBurst(){
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
+
   const container = document.getElementById('confetti-container');
   if (!container) return;
+
   const colors = ['#ffd000','#ff4d8b','#00e5ff','#7cff6b'];
   const count = 28;
+
   for(let i=0;i<count;i++){
     const piece = document.createElement('div');
     piece.className = 'confetti-piece';
@@ -58,6 +55,7 @@ function getNumberFromEl(el) {
   }
 })();
 
+
 /* Game logic */
 const games = [
   "Everyone drinks!",
@@ -69,6 +67,7 @@ const games = [
   "Water break (boring).",
   "Group cheers — bottoms up!"
 ];
+
 document.getElementById('gameBtn').addEventListener('click', ()=>{
   const r = games[Math.floor(Math.random()*games.length)];
   const el = document.getElementById('gameResult');
@@ -76,6 +75,7 @@ document.getElementById('gameBtn').addEventListener('click', ()=>{
   el.classList.add('pop');
   setTimeout(()=> el.classList.remove('pop'), 900);
 });
+
 
 /* Local Beer Counter */
 let beerCount = parseInt(localStorage.getItem('beerCount') || "0",10);
@@ -88,9 +88,14 @@ document.getElementById('addBeer').addEventListener('click', async ()=>{
   localStorage.setItem('beerCount', beerCount);
   animateNumber(beerEl, old, beerCount, 450);
 
-  // Global + daily counters
-  incrementGlobalBeer();
-  incrementDailyBeer();
+  // update global & daily counters
+  await incrementGlobalBeer();
+  await incrementDailyBeer();
+
+  // 420 Easter Egg
+  if(beerCount === 4 || beerCount === 20){
+    trigger420EasterEgg();
+  }
 });
 
 document.getElementById('resetBeer').addEventListener('click', ()=>{
@@ -99,68 +104,54 @@ document.getElementById('resetBeer').addEventListener('click', ()=>{
   animateNumber(beerEl, 0, 0);
 });
 
-/* CounterAPI v2 functions */
-async function loadGlobalBeerCount(){
-  try {
-    const res = await fetch(CONFIG.globalBeerGet);
-    const json = await res.json();
-    const newVal = (json && json.data && typeof json.data.up_count === 'number')
-      ? json.data.up_count : 0;
-    const el = document.getElementById("globalBeerCount");
-    const cur = getNumberFromEl(el);
-    animateNumber(el, cur, newVal, 700);
-    setTimeout(()=> el.textContent = newVal, 700);
-  } catch(e) {
-    console.error("loadGlobalBeerCount error", e);
-  }
-}
 
-async function loadDailyBeerCount(){
-  try {
-    const res = await fetch(CONFIG.dailyBeerGet);
-    const json = await res.json();
-    const newVal = (json && json.data && typeof json.data.up_count === 'number')
-      ? json.data.up_count : 0;
-    const el = document.getElementById("todayBeerCount");
-    const cur = getNumberFromEl(el);
-    animateNumber(el, cur, newVal, 700);
-    setTimeout(()=> el.textContent = newVal, 700);
-  } catch(e) {
-    console.error("loadDailyBeerCount error", e);
-  }
-}
-
+/* Global Beer Counter (CounterAPI.com) */
 async function incrementGlobalBeer(){
   try {
-    const res = await fetch(CONFIG.globalBeerUp);
-    const json = await res.json();
-    const newVal = (json && json.data && typeof json.data.up_count === 'number')
-      ? json.data.up_count : null;
-    if(newVal!==null){
-      const el = document.getElementById("globalBeerCount");
-      const cur = getNumberFromEl(el);
-      animateNumber(el, cur, newVal, 500);
-      setTimeout(()=> el.textContent = newVal, 500);
-    }
-  } catch(e) { console.error("incrementGlobalBeer error", e); }
+    const response = await fetch(CONFIG.globalBeerApi);
+    const data = await response.json();
+    const el = document.getElementById("globalBeerCount");
+    const newVal = data.value || 0;
+    animateNumber(el, parseInt(el.textContent)||0, newVal, 700);
+  } catch(e){
+    console.error("Global beer increment failed", e);
+  }
 }
 
 async function incrementDailyBeer(){
   try {
-    const res = await fetch(CONFIG.dailyBeerUp);
-    const json = await res.json();
-    const newVal = (json && json.data && typeof json.data.up_count === 'number')
-      ? json.data.up_count : null;
-    if(newVal!==null){
-      const el = document.getElementById("todayBeerCount");
-      const cur = getNumberFromEl(el);
-      animateNumber(el, cur, newVal, 500);
-      setTimeout(()=> el.textContent = newVal, 500);
-    }
-  } catch(e) { console.error("incrementDailyBeer error", e); }
+    const response = await fetch(CONFIG.dailyBeerApi);
+    const data = await response.json();
+    const el = document.getElementById("todayBeerCount");
+    const newVal = data.value || 0;
+    animateNumber(el, parseInt(el.textContent)||0, newVal, 700);
+  } catch(e){
+    console.error("Daily beer increment failed", e);
+  }
 }
 
-/* GoatCounter scan counter */
+
+/* Easter Egg: 420 Event */
+function trigger420EasterEgg(){
+  const container = document.getElementById('confetti-container');
+  const colors = ['#4caf50','#ff9800','#9c27b0'];
+  for(let i=0;i<100;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random()*100 + '%';
+    piece.style.top = (-20 - Math.random()*30) + 'px';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.width = (8 + Math.random()*10) + 'px';
+    piece.style.height = (8 + Math.random()*10) + 'px';
+    piece.style.animationDuration = (1200 + Math.random()*800) + 'ms';
+    container.appendChild(piece);
+    setTimeout(()=> piece.remove(), 3000);
+  }
+  alert("🍁 420 Easter Egg! Cheers 🍁");
+}
+
+
+/* Scan Counter via GoatCounter */
 async function loadScanCount(){
   const scanEl = document.getElementById("scanCounter");
   if(!scanEl) return;
@@ -171,7 +162,7 @@ async function loadScanCount(){
     let count = parseInt((data.count || "0").toString().replace(/,/g,''),10);
     if(isNaN(count)) count = 0;
     animateNumber(scanEl, 0, count, 900);
-    setTimeout(()=> scanEl.textContent = "#" + count,900);
+    setTimeout(()=>{ scanEl.textContent = "#" + count; }, 900);
   } catch(err){
     console.error("Scan counter error:", err);
     scanEl.textContent = "#0";
@@ -179,19 +170,24 @@ async function loadScanCount(){
 }
 loadScanCount();
 
-/* Header links */
-document.getElementById('navToMap').href = CONFIG.mapsUrl;
-document.getElementById('openPlaylist').href = CONFIG.spotifyUrl;
-document.getElementById('spotifyLink').href = CONFIG.spotifyUrl;
-document.getElementById('openPlaylist').textContent = CONFIG.playlistLabel;
-document.getElementById('spotifyLink').textContent = CONFIG.playlistLabel;
 
-/* Share button */
+/* Header CTA links */
+const navBtn = document.getElementById('navToMap');
+const spotifyBtn = document.getElementById('openPlaylist');
+const spotifyLink = document.getElementById('spotifyLink');
+navBtn.href = CONFIG.mapsUrl;
+spotifyBtn.href = CONFIG.spotifyUrl;
+spotifyLink.href = CONFIG.spotifyUrl;
+spotifyBtn.textContent = CONFIG.playlistLabel;
+spotifyLink.textContent = CONFIG.playlistLabel;
+
+
+/* Share button (mobile share / fallback copy) */
 document.getElementById('shareBtn').addEventListener('click', async ()=>{
   const url = location.href;
-  try{
-    if(navigator.share){
-      await navigator.share({title: document.title, text:"Find our camp!", url});
+  try {
+    if (navigator.share) {
+      await navigator.share({title: document.title,text:"Find our camp!",url});
     } else {
       await navigator.clipboard.writeText(url);
       alert('Link copied to clipboard — share it in the group chat 🎉');
@@ -201,13 +197,14 @@ document.getElementById('shareBtn').addEventListener('click', async ()=>{
   }
 });
 
-/* Accessibility focus */
+
+/* Accessibility improvements */
 (function accessibleFocus(){
   document.addEventListener('keyup', (e)=> {
-    if(e.key==='Tab') document.body.classList.add('show-focus');
+    if (e.key === 'Tab') document.body.classList.add('show-focus');
   });
 })();
 
-/* Initial load */
-loadGlobalBeerCount();
-loadDailyBeerCount();
+/* Initial load of counters */
+incrementGlobalBeer();
+incrementDailyBeer();
