@@ -1,115 +1,113 @@
-<!doctype html>
-<html lang="de">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Outdrink the Thinkers — Camp</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Google Font (optional) -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<title>Out Drink the Thinkers</title>
 
-  <link rel="stylesheet" href="style.css">
-  <meta name="theme-color" content="#0f1720" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+font-family:Montserrat, sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+}
+
+.container{
+max-width:600px;
+padding:30px;
+}
+
+h1{
+font-family:'Bebas Neue',cursive;
+font-size:60px;
+letter-spacing:3px;
+margin-bottom:10px;
+}
+
+.subtitle{
+font-size:18px;
+opacity:0.8;
+margin-bottom:30px;
+}
+
+.visitor{
+font-size:24px;
+margin-bottom:30px;
+}
+
+.counter{
+font-size:70px;
+font-weight:600;
+margin:20px 0;
+}
+
+button{
+background:#ffcc00;
+border:none;
+padding:15px 30px;
+font-size:20px;
+border-radius:10px;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+.footer{
+margin-top:30px;
+opacity:0.6;
+font-size:14px;
+}
+
+</style>
+
 </head>
+
 <body>
-  <div id="confetti-container" aria-hidden="true"></div>
 
-  <header class="site-header">
-    <div class="brand">
-      <div class="logo-mark" aria-hidden="true">🍺🎓</div>
-      <div>
-        <h1>OUTDRINK THE THINKERS</h1>
-        <p class="strap">OUTTHINK THE DRINKERS — <strong>Winners do both</strong></p>
-      </div>
-    </div>
-    <nav class="top-cta">
-      <a id="navToMap" class="btn primary" href="#" target="_blank" rel="noopener">Navigate to Camp</a>
-      <a id="openPlaylist" class="btn spotify" href="#" target="_blank" rel="noopener">Open Playlist</a>
-    </nav>
-  </header>
+<div class="container">
 
-  <main class="content">
-    <!-- MAP -->
-    <section class="panel map-panel" id="mapPanel" aria-labelledby="mapTitle">
-      <h2 id="mapTitle">Camp Map 📍</h2>
-      <div class="map-wrap">
-        <img src="assets/camp_map.jpg" alt="Festival-Lageplan mit Markierung unseres Camps" />
-        <!-- <div class="map-pin" aria-hidden="true">📌</div> -->
-      </div>
-      <p class="muted">Tipp: Screenshot machen und offline speichern — Handyempfang ist manchmal schlecht.</p>
-    </section>
+<h1>OUT DRINK<br>THE THINKERS</h1>
 
-    <!-- INFO GRID -->
-    <section class="grid">
-      <article class="panel card" id="crew">
-        <h3>Unsere Crew 👑</h3>
-        <ul class="crew-list" aria-label="Crew">
-          <li><strong>Andreas</strong><span> – Beer Logistics</span></li>
-          <li><strong>Thomas</strong><span> – Glitter Queen</span></li>
-          <li><strong>Sophie</strong><span> – Sound System</span></li>
-          <li><strong>Sina</strong><span> – Vodka Procurement</span></li>
-          <li><strong>Micha</strong><span> – Tent Infrastructure</span></li>
-        </ul>
-      </article>
+<div class="subtitle">
+Out Think the Drinkers
+</div>
 
-      <article class="panel card" id="counters" aria-labelledby="countersTitle">
-        <h3 id="countersTitle">Counters</h3>
-        <div class="counters-row">
-          <div class="stat">
-            <div class="stat-value" id="scanCounter">#0</div>
-            <div class="stat-label">QR Scans</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="beerCount">0</div>
-            <div class="stat-label">Beers logged</div>
-          </div>
-        </div>
-        <div class="stat-actions">
-          <button class="btn" id="addBeer">+1 Beer</button>
-          <button class="btn" id="resetBeer" title="Reset local counter">Reset</button>
-        </div>
-      </article>
+<div class="visitor">
+You are visitor <b id="scanCounter">#...</b>
+</div>
 
-      <article class="panel card" id="codewordBlock">
-        <h3>Codeword 🔑</h3>
-        <div class="codeword" id="codeword">DISCOBANANE</div>
-        <p class="muted">Sag das Codewort am Camp für einen Bonus (Sticker / Shot / Freudentanz).</p>
-      </article>
+<div class="counter" id="beerCounter">
+🍺 0
+</div>
 
-      <article class="panel card" id="game">
-        <h3>Trinkspiel 🎲</h3>
-        <div class="game-area">
-          <button class="btn" id="gameBtn">Generate Chaos</button>
-          <div id="gameResult" class="game-result" aria-live="polite"></div>
-        </div>
-      </article>
-    </section>
+<button onclick="addBeer()">
+Drink with us
+</button>
 
-    <!-- Play & Extra -->
-    <section class="panel playlist-panel">
-      <h2>Camp Playlist 🎶</h2>
-      <p class="muted">Musik für tagsüber und die späten Abenteuer.</p>
-      <div class="playlist-actions">
-        <a id="spotifyLink" class="btn spotify" href="#" target="_blank" rel="noopener">Open on Spotify</a>
-        <button class="btn ghost" id="shareBtn">Share this Camp</button>
-      </div>
-    </section>
+<div class="footer">
+Find our camp. Claim your beer.
+</div>
 
-    <section class="panel manifesto">
-      <h2>Camp Motto</h2>
-      <p class="lead">Outdrink the thinkers. Outthink the drinkers. <span class="accent">Winners do both.</span></p>
-      <p class="muted">Find us for cold beer, bad decisions and an excellent playlist.</p>
-    </section>
-  </main>
+</div>
 
-  <footer class="site-footer">
-    <small>© Outdrink the Thinkers — Make it memorable.</small>
-  </footer>
+<!-- GoatCounter -->
+<script data-goatcounter="https://derannson.goatcounter.com/count"
+async src="//gc.zgo.at/count.js"></script>
 
-  <script src="script.js"></script>
-  <!-- Counter -->
-  <script data-goatcounter="https://derannson.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
-  
+<script src="script.js"></script>
+
 </body>
 </html>
