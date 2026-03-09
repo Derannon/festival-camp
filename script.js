@@ -7,7 +7,10 @@ const CONFIG = {
   playlistLabel: "Our Festival Playlist",
 
   /* GoatCounter domain */
-  goatCounter: "https://festival-camp.goatcounter.com"
+  goatCounter: "https://festival-camp.goatcounter.com",
+
+  globalBeerApi: "https://api.counterapi.dev/v1/outdrink/beer/up",
+  dailyBeerApi: "https://api.counterapi.dev/v1/outdrink/beer-today/up"
 };
 /* ===== END CONFIG ===== */
 
@@ -84,11 +87,18 @@ const beerEl = document.getElementById('beerCount');
 
 animateNumber(beerEl, 0, beerCount);
 
-document.getElementById('addBeer').addEventListener('click', ()=>{
+document.getElementById('addBeer').addEventListener('click', async ()=>{
+
   const old = beerCount;
   beerCount = Math.min(9999, beerCount + 1);
+
   localStorage.setItem('beerCount', beerCount);
+
   animateNumber(beerEl, old, beerCount, 450);
+
+  updateGlobalBeer();
+  updateDailyBeer();
+
 });
 
 document.getElementById('resetBeer').addEventListener('click', ()=>{
@@ -96,6 +106,50 @@ document.getElementById('resetBeer').addEventListener('click', ()=>{
   localStorage.setItem('beerCount',0);
   animateNumber(beerEl, 0, 0);
 });
+
+async function updateGlobalBeer(){
+
+  try{
+
+    const response = await fetch(CONFIG.globalBeerApi);
+
+    const data = await response.json();
+
+    const global = data.count;
+
+    const el = document.getElementById("globalBeerCount");
+
+    animateNumber(el, 0, global, 700);
+
+  }catch(e){
+
+    console.log("Global beer counter unavailable");
+
+  }
+
+}
+
+async function updateDailyBeer(){
+
+  try{
+
+    const response = await fetch(CONFIG.dailyBeerApi);
+
+    const data = await response.json();
+
+    const today = data.count;
+
+    const el = document.getElementById("todayBeerCount");
+
+    animateNumber(el, 0, today, 700);
+
+  }catch(e){
+
+    console.log("Daily counter unavailable");
+
+  }
+
+}
 
 
 /* REAL Scan Counter using GoatCounter */
@@ -193,3 +247,6 @@ document.getElementById('shareBtn').addEventListener('click', async ()=>{
   });
 
 })();
+
+updateGlobalBeer();
+updateDailyBeer();
