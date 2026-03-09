@@ -9,8 +9,8 @@ const CONFIG = {
   /* GoatCounter domain */
   goatCounter: "https://festival-camp.goatcounter.com",
 
-  globalBeerApi: "https://api.counterapi.dev/v1/outdrink/beer/up",
-  dailyBeerApi: "https://api.counterapi.dev/v1/outdrink/beer-today/up"
+  globalBeerApi: "https://api.counterapi.dev/v2/outdrink/beer/up",
+  dailyBeerApi: "https://api.counterapi.dev/v2/outdrink/beer-today/up"
 };
 /* ===== END CONFIG ===== */
 
