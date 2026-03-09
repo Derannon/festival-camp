@@ -101,31 +101,35 @@ document.getElementById('resetBeer').addEventListener('click', ()=>{
 /* REAL Scan Counter using GoatCounter */
 async function loadScanCount(){
 
-  const scanEl = document.getElementById('scanCounter');
-  if (!scanEl) return;
+  const scanEl = document.getElementById("scanCounter");
+  if(!scanEl) return;
 
   try {
 
-    const response = await fetch(
-      CONFIG.goatCounter + "/counter/TOTAL.json"
-    );
+    const url = CONFIG.goatCounter + "/counter/TOTAL.json";
 
+    const response = await fetch(url);
     const data = await response.json();
 
     const count = data.count || 0;
 
-    scanEl.textContent = "#0";
+    // Animation ohne #
     animateNumber(scanEl, 0, count, 900);
 
+    // danach # davor setzen
     setTimeout(()=>{
       scanEl.textContent = "#" + count;
     },900);
 
-  } catch(e){
+  }
+  catch(err){
 
-    scanEl.textContent = "#???";
+    console.error("Scan counter error:", err);
+
+    scanEl.textContent = "#0";
 
   }
+
 }
 
 loadScanCount();
