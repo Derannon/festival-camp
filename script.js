@@ -7,7 +7,7 @@ const CONFIG = {
   playlistLabel: "Our Festival Playlist",
 
   /* GoatCounter domain */
-  goatCounter: "https://YOURNAME.goatcounter.com"
+  goatCounter: "https://festival-camp.goatcounter.com"
 };
 /* ===== END CONFIG ===== */
 
