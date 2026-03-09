@@ -215,3 +215,11 @@ body{
   .logo-mark{width:52px;height:52px;font-size:24px}
   .stat-value{font-size:20px}
 }
+
+/* Button Loading State */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
