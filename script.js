@@ -91,7 +91,6 @@ document.getElementById('gameBtn').addEventListener('click', ()=>{
 
 // Universelle Funktion: Standardmäßig wird gelesen. Wenn action = "/up", wird hochgezählt.
 async function fetchCounter(key, action = "") {
-  // Wir nutzen v1 der CounterAPI
   const url = `https://api.counterapi.dev/v1/${CONFIG.counterNamespace}/${key}${action}`;
   try {
     const response = await fetch(url);
@@ -108,32 +107,70 @@ async function loadGlobalCounters() {
   const globalEl = document.getElementById("globalBeerCount");
   const dailyEl = document.getElementById("todayBeerCount");
 
+  // Zeige "Lade..." an, während die Anfrage läuft
+  globalEl.textContent = "Lade...";
+  dailyEl.textContent = "Lade...";
+
   const globalCount = await fetchCounter(CONFIG.globalBeerKey);
-  if (globalCount !== null) animateNumber(globalEl, 0, globalCount, 700);
+  if (globalCount !== null) {
+      globalEl.textContent = "0"; // Kurz auf 0 setzen, damit die Animation sauber startet
+      animateNumber(globalEl, 0, globalCount, 700);
+  } else {
+      globalEl.textContent = "Fehler";
+  }
 
   const dailyCount = await fetchCounter(getTodayKey());
-  if (dailyCount !== null) animateNumber(dailyEl, 0, dailyCount, 700);
+  if (dailyCount !== null) {
+      dailyEl.textContent = "0";
+      animateNumber(dailyEl, 0, dailyCount, 700);
+  } else {
+      dailyEl.textContent = "Fehler";
+  }
 }
 
-/* Beer counter (Lokaler Klick) */
+/* Beer counter (Lokaler Klick & Globales Update) */
 let beerCount = parseInt(localStorage.getItem('beerCount') || "0", 10);
 const beerEl = document.getElementById('beerCount');
-
 animateNumber(beerEl, 0, beerCount);
 
-document.getElementById('addBeer').addEventListener('click', async ()=>{
-  // Lokales Update
+document.getElementById('addBeer').addEventListener('click', async (e) => {
+  const btn = e.target;
+  
+  // Verhindere mehrfache Klicks, während noch geladen wird
+  if (btn.disabled) return;
+  
+  // Setze Button auf Lade-Status
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = "Lade...";
+
+  // Lokales Update (sofortiges visuelles Feedback für den eigenen Counter)
   const old = beerCount;
   beerCount = Math.min(9999, beerCount + 1);
   localStorage.setItem('beerCount', beerCount);
   animateNumber(beerEl, old, beerCount, 450);
 
-  // 2. Beim Klick: Werte HOCHZÄHLEN ("/up") und direkt ins HTML schreiben
+  // 2. Beim Klick: Werte HOCHZÄHLEN ("/up"). 
+  // Die API gibt dabei automatisch den brandaktuellen Gesamtstand zurück!
   const newGlobal = await fetchCounter(CONFIG.globalBeerKey, "/up");
-  if (newGlobal !== null) document.getElementById("globalBeerCount").textContent = newGlobal;
-
   const newDaily = await fetchCounter(getTodayKey(), "/up");
-  if (newDaily !== null) document.getElementById("todayBeerCount").textContent = newDaily;
+
+  const globalEl = document.getElementById("globalBeerCount");
+  const dailyEl = document.getElementById("todayBeerCount");
+
+  // Animierter Übergang von der vorherigen angezeigten Zahl zur neuen, echten Zahl
+  if (newGlobal !== null) {
+      const currentDisplayedGlobal = parseInt(globalEl.textContent) || 0;
+      animateNumber(globalEl, currentDisplayedGlobal, newGlobal, 500);
+  }
+  if (newDaily !== null) {
+      const currentDisplayedDaily = parseInt(dailyEl.textContent) || 0;
+      animateNumber(dailyEl, currentDisplayedDaily, newDaily, 500);
+  }
+
+  // Button wieder freigeben
+  btn.textContent = originalText;
+  btn.disabled = false;
 });
 
 document.getElementById('resetBeer').addEventListener('click', ()=>{
@@ -203,6 +240,6 @@ document.getElementById('shareBtn').addEventListener('click', async ()=>{
   });
 })();
 
-// INIT: Zähler beim Laden abrufen
+// INIT: Zähler beim Laden der Seite abrufen
 loadScanCount();
 loadGlobalCounters();
