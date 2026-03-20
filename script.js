@@ -4,12 +4,10 @@ const CONFIG = {
   mapsUrl: "https://maps.app.goo.gl/SzGQtX2s7pvHX6De6",
   playlistLabel: "Our Festival Playlist",
 
-  /* GoatCounter domain */
-  goatCounter: "https://festival-camp.goatcounter.com",
-
   /* CounterAPI Config */
-  counterNamespace: "outdrink-camp-2026", // Dein eindeutiger Projektname
-  globalBeerKey: "global-beer"
+  counterNamespace: "outdrink-camp-2026", // Dein Projektname
+  globalBeerKey: "global-beer",
+  visitorKey: "visitor-scans"             // NEU: Für den Besucherzähler
 };
 /* ===== END CONFIG ===== */
 
@@ -80,17 +78,8 @@ async function fetchCounter(key, action = "") {
   const url = `https://api.counterapi.dev/v1/${CONFIG.counterNamespace}/${key}${action}`;
   try {
     const response = await fetch(url);
-    
-    // GEFIXT: Wenn der Zähler neu ist (z.B. neuer Tag), gibt die API 404 zurück.
-    // Das behandeln wir jetzt einfach als "0 Biere" anstatt als Fehler.
-    if (response.status === 404) {
-        return 0;
-    }
-    if (!response.ok) {
-        console.error(`HTTP Fehler: ${response.status} bei ${key}`);
-        return null;
-    }
-
+    if (response.status === 404) return 0; // Zähler existiert noch nicht
+    if (!response.ok) return null;
     const data = await response.json();
     return data.count !== undefined ? data.count : 0;
   } catch (e) {
@@ -103,7 +92,6 @@ async function loadGlobalCounters() {
   const globalEl = document.getElementById("globalBeerCount");
   const dailyEl = document.getElementById("todayBeerCount");
 
-  // Lade-Status initial setzen
   globalEl.textContent = "Lade...";
   dailyEl.textContent = "Lade...";
 
@@ -133,18 +121,15 @@ document.getElementById('addBeer').addEventListener('click', async (e) => {
   const btn = e.target;
   if (btn.disabled) return;
 
-  // Ladesperre aktivien
   btn.disabled = true;
   const originalText = btn.textContent;
   btn.textContent = "Lade...";
 
-  // Lokales Update (damit sich direkt was für den Nutzer bewegt)
   const old = beerCount;
   beerCount = Math.min(9999, beerCount + 1);
   localStorage.setItem('beerCount', beerCount);
   animateNumber(beerEl, old, beerCount, 450);
 
-  // Globales Update via API
   const newGlobal = await fetchCounter(CONFIG.globalBeerKey, "/up");
   const newDaily = await fetchCounter(getTodayKey(), "/up");
 
@@ -160,7 +145,6 @@ document.getElementById('addBeer').addEventListener('click', async (e) => {
       animateNumber(dailyEl, currentDisplayedDaily, newDaily, 500);
   }
 
-  // Button wieder freigeben
   btn.textContent = originalText;
   btn.disabled = false;
 });
@@ -171,31 +155,31 @@ document.getElementById('resetBeer').addEventListener('click', ()=>{
   animateNumber(beerEl, 0, 0);
 });
 
-/* REAL Scan Counter using GoatCounter */
+/* NEUER Scan Counter (mit CounterAPI und Session-Check) */
 async function loadScanCount(){
   const scanEl = document.getElementById("scanCounter");
   if(!scanEl) return;
 
-  // Neu: Ladeanzeige auch für den Besucher-Counter
   scanEl.textContent = "Lade..."; 
+  let count = 0;
 
   try {
-    const url = CONFIG.goatCounter + "/counter/TOTAL.json";
-    const response = await fetch(url);
-
-    // Bessere Fehlererkennung, wenn GoatCounter blockt
-    if (!response.ok) {
-        throw new Error(`GoatCounter Fehler: ${response.status}. Sind die Public Stats aktiviert?`);
+    // Wenn der User diese Session noch nicht gezählt wurde -> Hochzählen ("/up")
+    if (!sessionStorage.getItem('hasVisitedCamp')) {
+        count = await fetchCounter(CONFIG.visitorKey, "/up");
+        sessionStorage.setItem('hasVisitedCamp', 'true');
+    } else {
+        // Ansonsten einfach nur den aktuellen Stand lesen
+        count = await fetchCounter(CONFIG.visitorKey);
     }
 
-    const data = await response.json();
-    let count = data.count || "0";
-    count = parseInt(count.toString().replace(/,/g,''), 10);
-    if(isNaN(count)) count = 0;
-
-    scanEl.textContent = "0";
-    animateNumber(scanEl, 0, count, 900);
-    setTimeout(()=>{ scanEl.textContent = "#" + count; }, 900);
+    if (count !== null) {
+        scanEl.textContent = "0";
+        animateNumber(scanEl, 0, count, 900);
+        setTimeout(()=>{ scanEl.textContent = "#" + count; }, 900);
+    } else {
+        scanEl.textContent = "#0";
+    }
   }
   catch(err){
     console.error("Scan counter error:", err);
