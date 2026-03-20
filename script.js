@@ -75,16 +75,22 @@ document.getElementById('gameBtn').addEventListener('click', ()=>{
 
 /* === COUNTER API LOGIC === */
 async function fetchCounter(key, action = "") {
-  const url = `https://api.counterapi.dev/v1/${CONFIG.counterNamespace}/${key}${action}`;
+  const url = `https://counterapi.com/api/${CONFIG.counterNamespace}/${key}${action}`;
+  
   try {
     const response = await fetch(url);
-    if (response.status === 404) return 0; // Zähler existiert noch nicht
-    if (!response.ok) return null;
+
+    if (!response.ok) {
+      console.error("API Fehler:", response.status);
+      return null;
+    }
+
     const data = await response.json();
-    return data.count !== undefined ? data.count : 0;
+    return typeof data.value === "number" ? data.value : 0;
+
   } catch (e) {
-    console.error(`Fehler beim Abrufen von ${key}:`, e);
-    return null; 
+    console.error(`Fehler bei ${key}:`, e);
+    return null;
   }
 }
 
@@ -92,24 +98,14 @@ async function loadGlobalCounters() {
   const globalEl = document.getElementById("globalBeerCount");
   const dailyEl = document.getElementById("todayBeerCount");
 
-  globalEl.textContent = "Lade...";
-  dailyEl.textContent = "Lade...";
+  globalEl.textContent = "…";
+  dailyEl.textContent = "…";
 
   const globalCount = await fetchCounter(CONFIG.globalBeerKey);
-  if (globalCount !== null) {
-      globalEl.textContent = "0";
-      animateNumber(globalEl, 0, globalCount, 700);
-  } else {
-      globalEl.textContent = "Fehler";
-  }
-
   const dailyCount = await fetchCounter(getTodayKey());
-  if (dailyCount !== null) {
-      dailyEl.textContent = "0";
-      animateNumber(dailyEl, 0, dailyCount, 700);
-  } else {
-      dailyEl.textContent = "Fehler";
-  }
+
+  globalEl.textContent = globalCount !== null ? globalCount : "?";
+  dailyEl.textContent = dailyCount !== null ? dailyCount : "?";
 }
 
 /* Beer counter Local + Sync */
@@ -160,30 +156,27 @@ async function loadScanCount(){
   const scanEl = document.getElementById("scanCounter");
   if(!scanEl) return;
 
-  scanEl.textContent = "Lade..."; 
-  let count = 0;
+  scanEl.textContent = "…";
+
+  let count = null;
 
   try {
-    // Wenn der User diese Session noch nicht gezählt wurde -> Hochzählen ("/up")
     if (!sessionStorage.getItem('hasVisitedCamp')) {
-        count = await fetchCounter(CONFIG.visitorKey, "/up");
-        sessionStorage.setItem('hasVisitedCamp', 'true');
+      count = await fetchCounter(CONFIG.visitorKey, "/up");
+      sessionStorage.setItem('hasVisitedCamp', 'true');
     } else {
-        // Ansonsten einfach nur den aktuellen Stand lesen
-        count = await fetchCounter(CONFIG.visitorKey);
+      count = await fetchCounter(CONFIG.visitorKey);
     }
 
     if (count !== null) {
-        scanEl.textContent = "0";
-        animateNumber(scanEl, 0, count, 900);
-        setTimeout(()=>{ scanEl.textContent = "#" + count; }, 900);
+      scanEl.textContent = "#" + count;
     } else {
-        scanEl.textContent = "#0";
+      scanEl.textContent = "#?";
     }
-  }
-  catch(err){
+
+  } catch(err){
     console.error("Scan counter error:", err);
-    scanEl.textContent = "#0";
+    scanEl.textContent = "#?";
   }
 }
 
@@ -222,3 +215,6 @@ document.getElementById('shareBtn').addEventListener('click', async ()=>{
 // INIT
 loadScanCount();
 loadGlobalCounters();
+
+const data = await response.json();
+console.log("API Response:", data);
